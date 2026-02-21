@@ -323,6 +323,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.sub = this.svc.getRecords().subscribe(() => this.refresh());
+    this.svc.loadFromSheets();
   }
 
   ngOnDestroy() {

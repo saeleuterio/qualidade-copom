@@ -17,7 +17,9 @@ export class CallCenterService {
   error$ = new BehaviorSubject<string>('');
 
   constructor() {
-    this.loadFromSheets();
+    this.loadFromSheets().then(() => {
+      this.records$.next([...this.records$.getValue()]);
+    });
   }
 
   getRecords() {
@@ -37,15 +39,20 @@ export class CallCenterService {
     this.loading$.next(true);
     this.error$.next('');
     try {
-      const res = await fetch(SCRIPT_URL);
-      const json = await res.json();
+      const res = await fetch(SCRIPT_URL, {
+        method: 'GET',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain' },
+      });
+      const text = await res.text();
+      const json = JSON.parse(text);
       if (json.success && json.records) {
         this.records$.next(json.records);
         localStorage.setItem(this.storageKey, JSON.stringify(json.records));
       }
     } catch (err) {
       this.error$.next('Erro ao carregar dados. Usando dados locais.');
-      console.error(err);
+      console.error('Erro:', err);
     } finally {
       this.loading$.next(false);
     }
