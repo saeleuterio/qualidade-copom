@@ -444,49 +444,51 @@ export class DataEntryFormComponent implements OnInit {
   loadDate() {
     const records = this.svc.getSnapshot();
     const rec = records.find((r) => r.date === this.selectedDate);
+
+    this.totalOffered = 0;
+    this.totalReceived = 0;
+    this.totalLost = 0;
+    this.entries = [
+      {
+        team: '',
+        qualityScore: 100,
+        totalOffered: 0,
+        totalReceived: 0,
+        totalLost: 0,
+        avgAnswerSpeed: 0,
+        satisfaction: 5,
+      },
+      {
+        team: '',
+        qualityScore: 100,
+        totalOffered: 0,
+        totalReceived: 0,
+        totalLost: 0,
+        avgAnswerSpeed: 0,
+        satisfaction: 5,
+      },
+    ];
+
     if (rec) {
       this.totalOffered = rec.totalOffered || 0;
       this.totalReceived = rec.totalReceived || 0;
       this.totalLost = rec.totalLost || 0;
-      SHIFTS_CONFIG.forEach((shift, i) => {
-        const s = rec.shifts.find((s) => s.shift === shift.label);
-        if (s) this.entries[i] = { ...s };
-        else
+
+      rec.shifts.forEach((s, i) => {
+        if (i < 2) {
           this.entries[i] = {
-            team: '',
-            qualityScore: 100,
-            totalOffered: 0,
-            totalReceived: 0,
-            totalLost: 0,
-            avgAnswerSpeed: 0,
-            satisfaction: 5,
+            team: s.team.replace('Equipe ', ''),
+            qualityScore: s.qualityScore,
+            totalOffered: s.totalOffered || 0,
+            totalReceived: s.totalReceived || 0,
+            totalLost: s.totalLost || 0,
+            avgAnswerSpeed: s.avgAnswerSpeed || 0,
+            satisfaction: s.satisfaction || 5,
           };
+        }
       });
-    } else {
-      this.totalOffered = 0;
-      this.totalReceived = 0;
-      this.totalLost = 0;
-      this.entries = [
-        {
-          team: '',
-          qualityScore: 100,
-          totalOffered: 0,
-          totalReceived: 0,
-          totalLost: 0,
-          avgAnswerSpeed: 0,
-          satisfaction: 5,
-        },
-        {
-          team: '',
-          qualityScore: 100,
-          totalOffered: 0,
-          totalReceived: 0,
-          totalLost: 0,
-          avgAnswerSpeed: 0,
-          satisfaction: 5,
-        },
-      ];
     }
+
     this.saved = false;
   }
 
