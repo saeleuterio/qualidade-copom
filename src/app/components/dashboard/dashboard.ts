@@ -24,80 +24,143 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
 
       <!-- KPIs -->
       <div class="kpi-row">
-        <app-kpi-card label="Total Oferecidas" [value]="totals.offered" subtitle="ligações no mês">
-        </app-kpi-card>
+        <app-kpi-card
+          label="Total Oferecidas"
+          [value]="totals.offered"
+          subtitle="ligações no mês"
+        ></app-kpi-card>
         <app-kpi-card
           label="Total Recebidas"
           [value]="totals.received"
           subtitle="ligações atendidas"
-        >
-        </app-kpi-card>
+        ></app-kpi-card>
         <app-kpi-card
           label="Total Perdidas"
           [value]="totals.lost"
           subtitle="ligações abandonadas"
           [isAlert]="totals.lost > 0"
-        >
-        </app-kpi-card>
+        ></app-kpi-card>
         <app-kpi-card
           label="Taxa de Abandono"
           [value]="totals.abandonRate | number: '1.1-1'"
           suffix="%"
           subtitle="meta: abaixo de 5%"
           [isAlert]="totals.abandonRate > 5"
-        >
-        </app-kpi-card>
+        ></app-kpi-card>
       </div>
 
-      <!-- Gráficos -->
-      <div class="charts-row">
-        <div class="chart-card">
-          <h3>📊 Qualidade Média por Equipe</h3>
-          <canvas baseChart [data]="barData" [options]="barOptions" type="bar"> </canvas>
-        </div>
-        <div class="chart-card">
-          <h3>📈 Evolução Diária de Qualidade</h3>
-          <canvas baseChart [data]="lineData" [options]="lineOptions" type="line"> </canvas>
+      <!-- Gráfico de barras -->
+      <div class="chart-card full">
+        <h3>📊 Qualidade Média por Equipe</h3>
+        <div class="bar-chart-wrap">
+          <canvas baseChart [data]="barData" [options]="barOptions" type="bar"></canvas>
         </div>
       </div>
 
-      <!-- Tabela resumo -->
-      <div class="table-card">
-        <h3>📋 Resumo Mensal por Equipe</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Equipe</th>
-              <th>Dias Registrados</th>
-              <th>Melhor Qualidade</th>
-              <th>Pior Qualidade</th>
-              <th>Qualidade Média</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of teamSummary" [class.alert-row]="row.quality < threshold">
-              <td>
-                <strong>{{ row.team }}</strong>
-              </td>
-              <td>{{ row.days }}</td>
-              <td class="green">{{ row.best | number: '1.1-1' }}%</td>
-              <td [class.red]="row.worst < threshold">{{ row.worst | number: '1.1-1' }}%</td>
-              <td [class.red]="row.quality < threshold" [class.green]="row.quality >= threshold">
-                <strong>{{ row.quality | number: '1.1-1' }}%</strong>
-              </td>
-              <td>
-                <span
-                  class="badge"
-                  [class.ok]="row.quality >= threshold"
-                  [class.nok]="row.quality < threshold"
+      <!-- Gráfico de linha -->
+      <div class="chart-card full">
+        <h3>📈 Evolução Diária de Qualidade</h3>
+        <canvas baseChart [data]="lineData" [options]="lineOptions" type="line"></canvas>
+      </div>
+
+      <!-- Ranking + Resumo -->
+      <div class="bottom-row">
+        <!-- Ranking -->
+        <div class="ranking-card">
+          <h3>🏆 Ranking de Qualidade</h3>
+          <div class="ranking-list">
+            <div
+              class="ranking-item"
+              *ngFor="let row of ranking; let i = index"
+              [class.first]="i === 0"
+              [class.second]="i === 1"
+              [class.third]="i === 2"
+              [class.fourth]="i === 3"
+              [class.fifth]="i === 4"
+              [class.below]="row.quality < threshold"
+            >
+              <div class="rank-position">
+                <span class="medal" *ngIf="i === 0">🥇</span>
+                <span class="medal" *ngIf="i === 1">🥈</span>
+                <span class="medal" *ngIf="i === 2">🥉</span>
+                <span class="rank-num" *ngIf="i === 3">4º</span>
+                <span class="rank-num" *ngIf="i === 4">5º</span>
+              </div>
+
+              <div class="rank-info">
+                <div class="rank-header">
+                  <span class="rank-team">{{ row.team }}</span>
+                  <span class="rank-days">{{ row.days }} turno(s)</span>
+                </div>
+                <div class="rank-bar-wrap">
+                  <div
+                    class="rank-bar"
+                    [style.width.%]="row.quality"
+                    [style.background]="row.quality >= threshold ? '#00b894' : '#e74c3c'"
+                  ></div>
+                  <div class="rank-threshold-line"></div>
+                </div>
+              </div>
+
+              <div class="rank-score-wrap">
+                <div
+                  class="rank-score"
+                  [class.red]="row.quality < threshold"
+                  [class.green]="row.quality >= threshold"
                 >
-                  {{ row.quality >= threshold ? '✅ OK' : '⚠️ Abaixo' }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  {{ row.quality | number: '1.1-1' }}%
+                </div>
+                <div class="rank-status">
+                  <span *ngIf="row.quality >= threshold" class="dot green-dot">●</span>
+                  <span *ngIf="row.quality < threshold" class="dot red-dot">●</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="no-data" *ngIf="ranking.length === 0">
+              Nenhum dado registrado neste mês.
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumo mensal -->
+        <div class="table-card">
+          <h3>📋 Resumo Mensal por Equipe</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Equipe</th>
+                <th>Dias</th>
+                <th>Melhor</th>
+                <th>Pior</th>
+                <th>Média</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of teamSummary" [class.alert-row]="row.quality < threshold">
+                <td>
+                  <strong>{{ row.team }}</strong>
+                </td>
+                <td>{{ row.days }}</td>
+                <td class="green">{{ row.best | number: '1.1-1' }}%</td>
+                <td [class.red]="row.worst < threshold">{{ row.worst | number: '1.1-1' }}%</td>
+                <td [class.red]="row.quality < threshold" [class.green]="row.quality >= threshold">
+                  <strong>{{ row.quality | number: '1.1-1' }}%</strong>
+                </td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.ok]="row.quality >= threshold"
+                    [class.nok]="row.quality < threshold"
+                  >
+                    {{ row.quality >= threshold ? '✅ OK' : '⚠️ Abaixo' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Detalhe diário -->
@@ -107,10 +170,10 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
           <thead>
             <tr>
               <th>Data</th>
-              <th>Diurno (05:30–18:00)</th>
-              <th>Qualidade</th>
-              <th>Noturno (17:30–06:00)</th>
-              <th>Qualidade</th>
+              <th>Turno 1 (05:30–18:00)</th>
+              <th>Qualidade T1</th>
+              <th>Turno 2 (17:30–06:00)</th>
+              <th>Qualidade T2</th>
             </tr>
           </thead>
           <tbody>
@@ -184,25 +247,190 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         margin-bottom: 24px;
       }
 
-      .charts-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 24px;
-      }
       .chart-card {
         background: #1e2736;
         border: 1px solid #2d3748;
         border-radius: 14px;
-        padding: 20px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .chart-card.full {
+        width: 100%;
+        box-sizing: border-box;
       }
       .chart-card h3 {
         color: #e2e8f0;
-        margin: 0 0 16px;
+        margin: 0 0 20px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .bar-chart-wrap {
+        max-height: 300px;
+      }
+
+      .bottom-row {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      /* Ranking */
+      .ranking-card {
+        background: #1e2736;
+        border: 1px solid #2d3748;
+        border-radius: 14px;
+        padding: 24px;
+      }
+      .ranking-card h3 {
+        color: #e2e8f0;
+        margin: 0 0 20px;
         font-size: 14px;
         font-weight: 600;
       }
 
+      .ranking-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .ranking-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #151d2b;
+        border-radius: 12px;
+        padding: 14px 16px;
+        border: 2px solid #2d3748;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .ranking-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: #2d3748;
+        transition: 0.3s;
+      }
+      .ranking-item.first {
+        border-color: rgba(255, 215, 0, 0.4);
+        background: rgba(255, 215, 0, 0.05);
+      }
+      .ranking-item.first::before {
+        background: #ffd700;
+      }
+      .ranking-item.second {
+        border-color: rgba(192, 192, 192, 0.4);
+        background: rgba(192, 192, 192, 0.05);
+      }
+      .ranking-item.second::before {
+        background: #c0c0c0;
+      }
+      .ranking-item.third {
+        border-color: rgba(205, 127, 50, 0.4);
+        background: rgba(205, 127, 50, 0.05);
+      }
+      .ranking-item.third::before {
+        background: #cd7f32;
+      }
+      .ranking-item.fourth::before {
+        background: #4a5568;
+      }
+      .ranking-item.fifth::before {
+        background: #4a5568;
+      }
+      .ranking-item.below {
+        border-color: rgba(231, 76, 60, 0.3);
+      }
+
+      .rank-position {
+        width: 36px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .medal {
+        font-size: 26px;
+        line-height: 1;
+      }
+      .rank-num {
+        color: #8892a4;
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .rank-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .rank-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .rank-team {
+        color: #e2e8f0;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .rank-days {
+        color: #4a5568;
+        font-size: 11px;
+      }
+
+      .rank-bar-wrap {
+        background: #2d3748;
+        border-radius: 20px;
+        height: 6px;
+        overflow: hidden;
+        position: relative;
+      }
+      .rank-bar {
+        height: 6px;
+        border-radius: 20px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .rank-threshold-line {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 95%;
+        width: 2px;
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .rank-score-wrap {
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .rank-score {
+        font-size: 18px;
+        font-weight: 800;
+        font-family: 'Courier New', monospace;
+        line-height: 1;
+      }
+      .dot {
+        font-size: 10px;
+      }
+      .green-dot {
+        color: #00b894;
+      }
+      .red-dot {
+        color: #e74c3c;
+      }
+      .no-data {
+        text-align: center;
+        color: #4a5568;
+        padding: 20px;
+        font-size: 13px;
+      }
+
+      /* Tabela */
       .table-card {
         background: #1e2736;
         border: 1px solid #2d3748;
@@ -274,7 +502,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         .kpi-row {
           grid-template-columns: 1fr 1fr;
         }
-        .charts-row {
+        .bottom-row {
           grid-template-columns: 1fr;
         }
       }
@@ -287,6 +515,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   filtered: DailyRecord[] = [];
   totals = { offered: 0, received: 0, lost: 0, abandonRate: 0 };
   teamSummary: any[] = [];
+  ranking: any[] = [];
   private sub!: Subscription;
 
   barData: ChartData<'bar'> = { labels: [], datasets: [] };
@@ -335,6 +564,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.filtered = all.filter((r) => r.date.startsWith(this.selectedMonth));
     this.totals = this.svc.getMonthlyTotals(this.filtered) as any;
     this.buildTeamSummary();
+    this.buildRanking();
     this.buildBarChart();
     this.buildLineChart();
   }
@@ -344,15 +574,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const shifts = this.filtered.flatMap((r) => r.shifts.filter((s) => s.team === team));
       if (!shifts.length) return { team, days: 0, quality: 0, best: 0, worst: 0 };
       const qualities = shifts.map((s) => s.qualityScore);
-      const avg = qualities.reduce((a, b) => a + b, 0) / qualities.length;
       return {
         team,
         days: shifts.length,
-        quality: avg,
+        quality: qualities.reduce((a, b) => a + b, 0) / qualities.length,
         best: Math.max(...qualities),
         worst: Math.min(...qualities),
       };
     });
+  }
+
+  buildRanking() {
+    this.ranking = [...this.teamSummary]
+      .filter((t) => t.days > 0)
+      .sort((a, b) => b.quality - a.quality);
   }
 
   buildBarChart() {
