@@ -6,10 +6,19 @@ export const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'
 export const SHIFTS: string[] = ['Turno 1 (05:30 – 18:00)', 'Turno 2 (17:30 – 06:00)'];
 export const QUALITY_THRESHOLD = 95;
 
+const SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbx2f4RbvuJ9yPKAfxzkF0CPH4jXZf3sERU772tVcF3w7vcTVFEwkbXhM1EuivqzyHYXJw/exec';
+
 @Injectable({ providedIn: 'root' })
 export class CallCenterService {
   private storageKey = 'callCenterData';
-  private records$ = new BehaviorSubject<DailyRecord[]>(this.load());
+  private records$ = new BehaviorSubject<DailyRecord[]>(this.loadLocal());
+  loading$ = new BehaviorSubject<boolean>(false);
+  error$ = new BehaviorSubject<string>('');
+
+  constructor() {
+    this.loadFromSheets();
+  }
 
   getRecords() {
     return this.records$.asObservable();
@@ -17,8 +26,33 @@ export class CallCenterService {
   getSnapshot() {
     return this.records$.getValue();
   }
+  getLoading() {
+    return this.loading$.asObservable();
+  }
+  getError() {
+    return this.error$.asObservable();
+  }
 
-  saveRecord(record: DailyRecord) {
+  async loadFromSheets() {
+    this.loading$.next(true);
+    this.error$.next('');
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const json = await res.json();
+      if (json.success && json.records) {
+        this.records$.next(json.records);
+        localStorage.setItem(this.storageKey, JSON.stringify(json.records));
+      }
+    } catch (err) {
+      this.error$.next('Erro ao carregar dados. Usando dados locais.');
+      console.error(err);
+    } finally {
+      this.loading$.next(false);
+    }
+  }
+
+  async saveRecord(record: DailyRecord) {
+    // Salva localmente primeiro
     const all = this.records$.getValue();
     const idx = all.findIndex((r) => r.date === record.date);
     if (idx >= 0) all[idx] = record;
@@ -26,9 +60,28 @@ export class CallCenterService {
     all.sort((a, b) => a.date.localeCompare(b.date));
     this.records$.next([...all]);
     localStorage.setItem(this.storageKey, JSON.stringify(all));
+
+    // Envia para o Google Sheets
+    this.loading$.next(true);
+    this.error$.next('');
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'save', record }),
+      });
+      const json = await res.json();
+      if (!json.success) {
+        this.error$.next('Erro ao salvar no Google Sheets.');
+      }
+    } catch (err) {
+      this.error$.next('Erro de conexão. Dados salvos localmente.');
+      console.error(err);
+    } finally {
+      this.loading$.next(false);
+    }
   }
 
-  private load(): DailyRecord[] {
+  private loadLocal(): DailyRecord[] {
     try {
       return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
     } catch {

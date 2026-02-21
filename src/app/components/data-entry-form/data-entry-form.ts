@@ -134,8 +134,11 @@ interface ShiftEntry {
         </div>
       </div>
 
-      <button class="save-btn" (click)="save()">💾 Salvar Dados do Dia</button>
-      <div class="saved-msg" *ngIf="saved">✅ Dados salvos com sucesso!</div>
+      <button class="save-btn" (click)="save()" [disabled]="loading">
+        {{ loading ? '⏳ Salvando...' : '💾 Salvar Dados do Dia' }}
+      </button>
+      <div class="saved-msg" *ngIf="saved">✅ Dados salvos no Google Sheets!</div>
+      <div class="error-msg" *ngIf="errorMsg">⚠️ {{ errorMsg }}</div>
     </div>
   `,
   styles: [
@@ -382,6 +385,17 @@ interface ShiftEntry {
         margin-top: 12px;
         font-weight: 600;
       }
+      .error-msg {
+        text-align: center;
+        color: #e74c3c;
+        margin-top: 10px;
+        font-weight: 600;
+      }
+      .save-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
 
       @media (max-width: 600px) {
         .shifts-grid {
@@ -400,6 +414,8 @@ export class DataEntryFormComponent implements OnInit {
   threshold = QUALITY_THRESHOLD;
   selectedDate = new Date().toISOString().split('T')[0];
   saved = false;
+  loading = false;
+  errorMsg = '';
 
   totalOffered = 0;
   totalReceived = 0;
@@ -431,7 +447,10 @@ export class DataEntryFormComponent implements OnInit {
     },
   ];
 
-  constructor(private svc: CallCenterService) {}
+  constructor(private svc: CallCenterService) {
+    this.svc.getLoading().subscribe((l) => (this.loading = l));
+    this.svc.getError().subscribe((e) => (this.errorMsg = e));
+  }
 
   ngOnInit() {
     this.loadDate();
