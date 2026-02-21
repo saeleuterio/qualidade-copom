@@ -49,11 +49,13 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         ></app-kpi-card>
       </div>
 
-      <!-- Gráfico de barras -->
+      <!-- Gráfico de barras centralizado -->
       <div class="chart-card full">
         <h3>📊 Qualidade Média por Equipe</h3>
-        <div class="bar-chart-wrap">
-          <canvas baseChart [data]="barData" [options]="barOptions" type="bar"></canvas>
+        <div class="bar-center">
+          <div class="bar-inner">
+            <canvas baseChart [data]="barData" [options]="barOptions" type="bar"></canvas>
+          </div>
         </div>
       </div>
 
@@ -63,7 +65,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         <canvas baseChart [data]="lineData" [options]="lineOptions" type="line"></canvas>
       </div>
 
-      <!-- Ranking + Resumo -->
+      <!-- Ranking + Resumo na mesma altura -->
       <div class="bottom-row">
         <!-- Ranking -->
         <div class="ranking-card">
@@ -164,7 +166,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       </div>
 
       <!-- Detalhe diário -->
-      <div class="table-card" *ngIf="filtered.length > 0">
+      <div class="table-card detail-table" *ngIf="filtered.length > 0">
         <h3>📅 Detalhe por Dia</h3>
         <table>
           <thead>
@@ -253,10 +255,8 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         border-radius: 14px;
         padding: 24px;
         margin-bottom: 20px;
-      }
-      .chart-card.full {
-        width: 100%;
         box-sizing: border-box;
+        width: 100%;
       }
       .chart-card h3 {
         color: #e2e8f0;
@@ -264,15 +264,27 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         font-size: 14px;
         font-weight: 600;
       }
-      .bar-chart-wrap {
-        max-height: 300px;
+
+      /* Centraliza o gráfico de barras em qualquer tamanho de tela */
+      .bar-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
+      .bar-inner {
+        width: 60%;
+        min-width: 300px;
+        max-width: 800px;
       }
 
+      /* Ranking + Resumo lado a lado com mesma altura */
       .bottom-row {
         display: grid;
         grid-template-columns: 360px 1fr;
         gap: 20px;
         margin-bottom: 20px;
+        align-items: stretch;
       }
 
       /* Ranking */
@@ -281,6 +293,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         border: 1px solid #2d3748;
         border-radius: 14px;
         padding: 24px;
+        box-sizing: border-box;
       }
       .ranking-card h3 {
         color: #e2e8f0;
@@ -430,14 +443,17 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         font-size: 13px;
       }
 
-      /* Tabela */
+      /* Tabela resumo */
       .table-card {
         background: #1e2736;
         border: 1px solid #2d3748;
         border-radius: 14px;
         padding: 20px;
-        margin-bottom: 20px;
         overflow-x: auto;
+        box-sizing: border-box;
+      }
+      .detail-table {
+        margin-bottom: 20px;
       }
       .table-card h3 {
         color: #e2e8f0;
@@ -505,6 +521,9 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         .bottom-row {
           grid-template-columns: 1fr;
         }
+        .bar-inner {
+          width: 100%;
+        }
       }
     `,
   ],
@@ -521,6 +540,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   barData: ChartData<'bar'> = { labels: [], datasets: [] };
   barOptions: ChartConfiguration['options'] = {
     responsive: true,
+    maintainAspectRatio: true,
     plugins: { legend: { display: false } },
     scales: {
       y: {
