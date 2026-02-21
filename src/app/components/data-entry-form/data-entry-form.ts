@@ -7,8 +7,8 @@ import { DailyRecord, TeamShift } from '../../models/team-data';
 export const QUALITY_THRESHOLD = 95;
 
 const SHIFTS_CONFIG = [
-  { label: 'Turno 1 (05:30 – 18:00)', key: 'turno1' },
-  { label: 'Turno 2 (17:30 – 06:00)', key: 'turno2' },
+  { label: 'Diurno (05:30 – 18:00)', key: 'turno1' },
+  { label: 'Noturno (17:30 – 06:00)', key: 'turno2' },
 ];
 
 const TEAM_OPTIONS = ['A', 'B', 'C', 'D', 'E'];
