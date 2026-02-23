@@ -30,21 +30,21 @@ import { CommonModule } from '@angular/common';
       .kpi-label {
         display: block;
         color: #8892a4;
-        font-size: 13px;
+        font-size: 25px;
         margin-bottom: 8px;
         text-transform: uppercase;
         letter-spacing: 1px;
       }
       .kpi-value {
         display: block;
-        font-size: 36px;
+        font-size: 50px;
         font-weight: 700;
         font-family: 'Courier New', monospace;
       }
       .kpi-sub {
         display: block;
         color: #8892a4;
-        font-size: 11px;
+        font-size: 20px;
         margin-top: 4px;
       }
     `,
