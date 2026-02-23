@@ -128,7 +128,7 @@ import { DataEntryFormComponent } from './components/data-entry-form/data-entry-
       .header-title {
         display: block;
         color: #f5a623;
-        font-size: 20px;
+        font-size: 40px;
         font-weight: 800;
         letter-spacing: 3px;
         text-transform: uppercase;
@@ -137,7 +137,7 @@ import { DataEntryFormComponent } from './components/data-entry-form/data-entry-
       .header-subtitle {
         display: block;
         color: rgba(255, 255, 255, 0.6);
-        font-size: 11px;
+        font-size: 21px;
         letter-spacing: 1.5px;
         margin-top: 4px;
         text-transform: uppercase;
