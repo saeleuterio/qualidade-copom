@@ -16,42 +16,50 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
   imports: [CommonModule, FormsModule, BaseChartDirective, KpiCardComponent, DecimalPipe],
   template: `
     <div class="dash-wrap">
-      <div class="month-filter">
-        <label>Mês:</label>
-        <input type="month" [(ngModel)]="selectedMonth" (change)="refresh()" />
-        <span class="record-count">{{ filtered.length }} dia(s) registrado(s)</span>
+      <div class="top-bar">
+        <div class="month-filter">
+          <span class="filter-label">MÊS</span>
+          <input type="month" [(ngModel)]="selectedMonth" (change)="refresh()" />
+        </div>
+        <span class="record-count">{{ filtered.length }} DIA(S) REGISTRADO(S)</span>
       </div>
 
       <!-- KPIs -->
       <div class="kpi-row">
-        <app-kpi-card
-          label="Total Oferecidas"
-          [value]="totals.offered"
-          subtitle="ligações no mês"
-        ></app-kpi-card>
-        <app-kpi-card
-          label="Total Recebidas"
-          [value]="totals.received"
-          subtitle="ligações atendidas"
-        ></app-kpi-card>
-        <app-kpi-card
-          label="Total Perdidas"
-          [value]="totals.lost"
-          subtitle="ligações abandonadas"
-          [isAlert]="totals.lost > 0"
-        ></app-kpi-card>
-        <app-kpi-card
-          label="Taxa de Abandono"
-          [value]="totals.abandonRate | number: '1.1-1'"
-          suffix="%"
-          subtitle="meta: abaixo de 5%"
-          [isAlert]="totals.abandonRate > 5"
-        ></app-kpi-card>
+        <div class="kpi-card">
+          <div class="kpi-label">TOTAL OFERECIDAS</div>
+          <div class="kpi-value">{{ totals.offered }}</div>
+          <div class="kpi-sub">ligações no mês</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">TOTAL RECEBIDAS</div>
+          <div class="kpi-value green">{{ totals.received }}</div>
+          <div class="kpi-sub">ligações atendidas</div>
+        </div>
+        <div class="kpi-card" [class.alert]="totals.lost > 0">
+          <div class="kpi-label">TOTAL PERDIDAS</div>
+          <div class="kpi-value" [class.red]="totals.lost > 0">{{ totals.lost }}</div>
+          <div class="kpi-sub">ligações abandonadas</div>
+        </div>
+        <div class="kpi-card" [class.alert]="totals.abandonRate > 5">
+          <div class="kpi-label">TAXA DE ABANDONO</div>
+          <div
+            class="kpi-value"
+            [class.red]="totals.abandonRate > 5"
+            [class.green]="totals.abandonRate <= 5"
+          >
+            {{ totals.abandonRate | number: '1.1-1' }}%
+          </div>
+          <div class="kpi-sub">meta: abaixo de 5%</div>
+        </div>
       </div>
 
-      <!-- Gráfico de barras centralizado -->
-      <div class="chart-card full">
-        <h3>📊 Qualidade Média por Equipe</h3>
+      <!-- Gráfico barras centralizado -->
+      <div class="chart-card">
+        <div class="card-header">
+          <span class="card-title">QUALIDADE MÉDIA POR EQUIPE</span>
+          <span class="card-badge">% qualidade</span>
+        </div>
         <div class="bar-center">
           <div class="bar-inner">
             <canvas baseChart [data]="barData" [options]="barOptions" type="bar"></canvas>
@@ -59,17 +67,21 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         </div>
       </div>
 
-      <!-- Gráfico de linha -->
-      <div class="chart-card full">
-        <h3>📈 Evolução Diária de Qualidade</h3>
+      <!-- Gráfico linha -->
+      <div class="chart-card">
+        <div class="card-header">
+          <span class="card-title">EVOLUÇÃO DIÁRIA DE QUALIDADE</span>
+          <span class="card-badge">por turno</span>
+        </div>
         <canvas baseChart [data]="lineData" [options]="lineOptions" type="line"></canvas>
       </div>
 
-      <!-- Ranking + Resumo na mesma altura -->
+      <!-- Ranking + Resumo -->
       <div class="bottom-row">
-        <!-- Ranking -->
         <div class="ranking-card">
-          <h3>🏆 Ranking de Qualidade</h3>
+          <div class="card-header">
+            <span class="card-title">🏆 RANKING DE QUALIDADE</span>
+          </div>
           <div class="ranking-list">
             <div
               class="ranking-item"
@@ -81,41 +93,43 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
               [class.fifth]="i === 4"
               [class.below]="row.quality < threshold"
             >
-              <div class="rank-position">
-                <span class="medal" *ngIf="i === 0">🥇</span>
-                <span class="medal" *ngIf="i === 1">🥈</span>
-                <span class="medal" *ngIf="i === 2">🥉</span>
+              <div class="rank-pos">
+                <span *ngIf="i === 0">🥇</span>
+                <span *ngIf="i === 1">🥈</span>
+                <span *ngIf="i === 2">🥉</span>
                 <span class="rank-num" *ngIf="i === 3">4º</span>
                 <span class="rank-num" *ngIf="i === 4">5º</span>
               </div>
 
               <div class="rank-info">
-                <div class="rank-header">
+                <div class="rank-top">
                   <span class="rank-team">{{ row.team }}</span>
                   <span class="rank-days">{{ row.days }} turno(s)</span>
                 </div>
-                <div class="rank-bar-wrap">
+                <div class="rank-bar-bg">
                   <div
-                    class="rank-bar"
+                    class="rank-bar-fill"
                     [style.width.%]="row.quality"
-                    [style.background]="row.quality >= threshold ? '#00b894' : '#e74c3c'"
+                    [style.background]="row.quality >= threshold ? '#00d4aa' : '#ff4757'"
                   ></div>
-                  <div class="rank-threshold-line"></div>
+                  <div class="rank-line"></div>
                 </div>
               </div>
 
-              <div class="rank-score-wrap">
-                <div
+              <div class="rank-score-col">
+                <span
                   class="rank-score"
-                  [class.red]="row.quality < threshold"
                   [class.green]="row.quality >= threshold"
+                  [class.red]="row.quality < threshold"
                 >
                   {{ row.quality | number: '1.1-1' }}%
-                </div>
-                <div class="rank-status">
-                  <span *ngIf="row.quality >= threshold" class="dot green-dot">●</span>
-                  <span *ngIf="row.quality < threshold" class="dot red-dot">●</span>
-                </div>
+                </span>
+                <span
+                  class="rank-dot"
+                  [class.green-dot]="row.quality >= threshold"
+                  [class.red-dot]="row.quality < threshold"
+                  >●</span
+                >
               </div>
             </div>
 
@@ -125,18 +139,19 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
           </div>
         </div>
 
-        <!-- Resumo mensal -->
         <div class="table-card">
-          <h3>📋 Resumo Mensal por Equipe</h3>
+          <div class="card-header">
+            <span class="card-title">RESUMO MENSAL POR EQUIPE</span>
+          </div>
           <table>
             <thead>
               <tr>
-                <th>Equipe</th>
-                <th>Dias</th>
-                <th>Melhor</th>
-                <th>Pior</th>
-                <th>Média</th>
-                <th>Status</th>
+                <th>EQUIPE</th>
+                <th>DIAS</th>
+                <th>MELHOR</th>
+                <th>PIOR</th>
+                <th>MÉDIA</th>
+                <th>STATUS</th>
               </tr>
             </thead>
             <tbody>
@@ -156,7 +171,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
                     [class.ok]="row.quality >= threshold"
                     [class.nok]="row.quality < threshold"
                   >
-                    {{ row.quality >= threshold ? '✅ OK' : '⚠️ Abaixo' }}
+                    {{ row.quality >= threshold ? '✅ OK' : '⚠️ ABAIXO' }}
                   </span>
                 </td>
               </tr>
@@ -166,47 +181,49 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       </div>
 
       <!-- Detalhe diário -->
-      <div class="table-card detail-table" *ngIf="filtered.length > 0">
-        <h3>📅 Detalhe por Dia</h3>
+      <div class="table-card detail" *ngIf="filtered.length > 0">
+        <div class="card-header">
+          <span class="card-title">DETALHE POR DIA</span>
+        </div>
         <table>
           <thead>
             <tr>
-              <th>Data</th>
-              <th>Turno 1 (05:30–18:00)</th>
-              <th>Qualidade T1</th>
-              <th>Turno 2 (17:30–06:00)</th>
-              <th>Qualidade T2</th>
+              <th>DATA</th>
+              <th>TURNO 1 (05:30–18:00)</th>
+              <th>QUALIDADE T1</th>
+              <th>TURNO 2 (17:30–06:00)</th>
+              <th>QUALIDADE T2</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let rec of filtered">
-              <td>{{ rec.date | date: 'dd/MM/yyyy' : 'UTC' }}</td>
+              <td class="mono-date">{{ rec.date | date: 'dd/MM/yyyy' : 'UTC' }}</td>
               <ng-container *ngIf="rec.shifts[0] as t1">
                 <td>{{ t1.team }}</td>
                 <td
                   [class.red]="t1.qualityScore < threshold"
                   [class.green]="t1.qualityScore >= threshold"
                 >
-                  {{ t1.qualityScore | number: '1.1-1' }}%
+                  <strong>{{ t1.qualityScore | number: '1.1-1' }}%</strong>
                 </td>
               </ng-container>
-              <ng-container *ngIf="!rec.shifts[0]">
-                <td>—</td>
-                <td>—</td>
-              </ng-container>
+              <ng-container *ngIf="!rec.shifts[0]"
+                ><td>—</td>
+                <td>—</td></ng-container
+              >
               <ng-container *ngIf="rec.shifts[1] as t2">
                 <td>{{ t2.team }}</td>
                 <td
                   [class.red]="t2.qualityScore < threshold"
                   [class.green]="t2.qualityScore >= threshold"
                 >
-                  {{ t2.qualityScore | number: '1.1-1' }}%
+                  <strong>{{ t2.qualityScore | number: '1.1-1' }}%</strong>
                 </td>
               </ng-container>
-              <ng-container *ngIf="!rec.shifts[1]">
-                <td>—</td>
-                <td>—</td>
-              </ng-container>
+              <ng-container *ngIf="!rec.shifts[1]"
+                ><td>—</td>
+                <td>—</td></ng-container
+              >
             </tr>
           </tbody>
         </table>
@@ -217,59 +234,128 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
     `
       .dash-wrap {
         padding: 20px;
+        font-family: 'Inter', sans-serif;
       }
 
+      /* Top bar */
+      .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
       .month-filter {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-        color: #8892a4;
+        gap: 10px;
       }
-      .month-filter label {
-        font-size: 13px;
+      .filter-label {
+        color: #4a5568;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
       }
       .month-filter input {
-        background: #2d3748;
-        border: 1px solid #4a5568;
+        background: #111827;
+        border: 1px solid #1f2937;
         color: #e2e8f0;
-        padding: 8px 12px;
-        border-radius: 8px;
+        padding: 7px 12px;
+        border-radius: 6px;
         font-size: 13px;
+        font-family: 'Inter', sans-serif;
       }
       .record-count {
-        font-size: 12px;
-        color: #4a5568;
+        color: #374151;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
       }
 
+      /* KPI */
       .kpi-row {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-
-      .chart-card {
-        background: #1e2736;
-        border: 1px solid #2d3748;
-        border-radius: 14px;
-        padding: 24px;
+        gap: 14px;
         margin-bottom: 20px;
-        box-sizing: border-box;
-        width: 100%;
       }
-      .chart-card h3 {
+      .kpi-card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 20px 18px;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #1f2937;
+        transition: 0.3s;
+      }
+      .kpi-card.alert::before {
+        background: #ff4757;
+      }
+      .kpi-label {
+        color: #4a5568;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        margin-bottom: 10px;
+      }
+      .kpi-value {
+        font-size: 36px;
+        font-weight: 800;
         color: #e2e8f0;
-        margin: 0 0 20px;
-        font-size: 14px;
-        font-weight: 600;
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+      .kpi-sub {
+        color: #374151;
+        font-size: 11px;
+        font-weight: 500;
       }
 
-      /* Centraliza o gráfico de barras em qualquer tamanho de tela */
+      /* Cards */
+      .chart-card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .card-title {
+        color: #9ca3af;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+      .card-badge {
+        background: #1f2937;
+        color: #4b5563;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
       .bar-center {
         display: flex;
         justify-content: center;
-        align-items: center;
         width: 100%;
       }
       .bar-inner {
@@ -278,44 +364,36 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         max-width: 800px;
       }
 
-      /* Ranking + Resumo lado a lado com mesma altura */
+      /* Bottom row */
       .bottom-row {
         display: grid;
         grid-template-columns: 360px 1fr;
-        gap: 20px;
-        margin-bottom: 20px;
+        gap: 16px;
+        margin-bottom: 16px;
         align-items: stretch;
       }
 
       /* Ranking */
       .ranking-card {
-        background: #1e2736;
-        border: 1px solid #2d3748;
-        border-radius: 14px;
-        padding: 24px;
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 20px;
         box-sizing: border-box;
       }
-      .ranking-card h3 {
-        color: #e2e8f0;
-        margin: 0 0 20px;
-        font-size: 14px;
-        font-weight: 600;
-      }
-
       .ranking-list {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
       }
-
       .ranking-item {
         display: flex;
         align-items: center;
-        gap: 14px;
-        background: #151d2b;
-        border-radius: 12px;
-        padding: 14px 16px;
-        border: 2px solid #2d3748;
+        gap: 12px;
+        background: #0d1117;
+        border-radius: 10px;
+        padding: 12px 14px;
+        border: 1px solid #1f2937;
         transition: 0.3s;
         position: relative;
         overflow: hidden;
@@ -326,140 +404,115 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         left: 0;
         top: 0;
         bottom: 0;
-        width: 4px;
-        background: #2d3748;
-        transition: 0.3s;
-      }
-      .ranking-item.first {
-        border-color: rgba(255, 215, 0, 0.4);
-        background: rgba(255, 215, 0, 0.05);
+        width: 3px;
+        background: #1f2937;
       }
       .ranking-item.first::before {
         background: #ffd700;
       }
-      .ranking-item.second {
-        border-color: rgba(192, 192, 192, 0.4);
-        background: rgba(192, 192, 192, 0.05);
-      }
       .ranking-item.second::before {
-        background: #c0c0c0;
-      }
-      .ranking-item.third {
-        border-color: rgba(205, 127, 50, 0.4);
-        background: rgba(205, 127, 50, 0.05);
+        background: #9ca3af;
       }
       .ranking-item.third::before {
         background: #cd7f32;
       }
-      .ranking-item.fourth::before {
-        background: #4a5568;
-      }
-      .ranking-item.fifth::before {
-        background: #4a5568;
-      }
       .ranking-item.below {
-        border-color: rgba(231, 76, 60, 0.3);
+        border-color: rgba(255, 71, 87, 0.2);
       }
 
-      .rank-position {
-        width: 36px;
+      .rank-pos {
+        width: 32px;
         text-align: center;
         flex-shrink: 0;
-      }
-      .medal {
-        font-size: 26px;
-        line-height: 1;
+        font-size: 22px;
       }
       .rank-num {
-        color: #8892a4;
-        font-size: 18px;
+        color: #4b5563;
+        font-size: 16px;
         font-weight: 800;
+        font-family: 'Inter', sans-serif;
       }
 
       .rank-info {
         flex: 1;
         min-width: 0;
       }
-      .rank-header {
+      .rank-top {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
       }
       .rank-team {
         color: #e2e8f0;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
       }
       .rank-days {
-        color: #4a5568;
-        font-size: 11px;
+        color: #374151;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
       }
 
-      .rank-bar-wrap {
-        background: #2d3748;
+      .rank-bar-bg {
+        background: #1f2937;
         border-radius: 20px;
-        height: 6px;
-        overflow: hidden;
+        height: 5px;
         position: relative;
+        overflow: hidden;
       }
-      .rank-bar {
-        height: 6px;
+      .rank-bar-fill {
+        height: 5px;
         border-radius: 20px;
-        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: width 0.6s;
       }
-      .rank-threshold-line {
+      .rank-line {
         position: absolute;
         top: 0;
         bottom: 0;
         left: 95%;
         width: 2px;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.1);
       }
 
-      .rank-score-wrap {
+      .rank-score-col {
         text-align: center;
         flex-shrink: 0;
       }
       .rank-score {
-        font-size: 18px;
+        display: block;
+        font-size: 17px;
         font-weight: 800;
-        font-family: 'Courier New', monospace;
-        line-height: 1;
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
       }
-      .dot {
-        font-size: 10px;
+      .rank-dot {
+        font-size: 9px;
       }
       .green-dot {
-        color: #00b894;
+        color: #00d4aa;
       }
       .red-dot {
-        color: #e74c3c;
+        color: #ff4757;
       }
       .no-data {
         text-align: center;
-        color: #4a5568;
+        color: #374151;
         padding: 20px;
-        font-size: 13px;
+        font-size: 12px;
+        letter-spacing: 1px;
       }
 
-      /* Tabela resumo */
+      /* Tabela */
       .table-card {
-        background: #1e2736;
-        border: 1px solid #2d3748;
-        border-radius: 14px;
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
         padding: 20px;
         overflow-x: auto;
         box-sizing: border-box;
       }
-      .detail-table {
+      .table-card.detail {
         margin-bottom: 20px;
-      }
-      .table-card h3 {
-        color: #e2e8f0;
-        margin: 0 0 16px;
-        font-size: 14px;
-        font-weight: 600;
       }
 
       table {
@@ -467,51 +520,58 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         border-collapse: collapse;
       }
       thead tr {
-        background: #151d2b;
+        background: #0d1117;
       }
       th {
-        padding: 11px 14px;
+        padding: 10px 14px;
         text-align: left;
-        color: #718096;
-        font-size: 11px;
+        color: #374151;
+        font-size: 10px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
+        letter-spacing: 1.5px;
+        font-weight: 700;
       }
       td {
         padding: 11px 14px;
-        border-bottom: 1px solid #2d3748;
-        color: #e2e8f0;
+        border-bottom: 1px solid #1f2937;
+        color: #d1d5db;
         font-size: 13px;
+        font-weight: 500;
       }
       tbody tr:hover {
         background: rgba(255, 255, 255, 0.02);
       }
       .alert-row {
-        background: rgba(231, 76, 60, 0.06);
+        background: rgba(255, 71, 87, 0.04);
+      }
+      .mono-date {
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-size: 12px;
+        color: #6b7280;
       }
 
       .red {
-        color: #e74c3c !important;
+        color: #ff4757 !important;
       }
       .green {
-        color: #00b894 !important;
+        color: #00d4aa !important;
       }
 
       .badge {
         display: inline-block;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 10px;
         font-weight: 700;
+        letter-spacing: 0.8px;
       }
       .badge.ok {
-        background: rgba(0, 184, 148, 0.2);
-        color: #00b894;
+        background: rgba(0, 212, 170, 0.15);
+        color: #00d4aa;
       }
       .badge.nok {
-        background: rgba(231, 76, 60, 0.2);
-        color: #e74c3c;
+        background: rgba(255, 71, 87, 0.15);
+        color: #ff4757;
       }
 
       @media (max-width: 900px) {
@@ -546,25 +606,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
       y: {
         min: 0,
         max: 100,
-        ticks: { color: '#8892a4', callback: (v) => v + '%' },
-        grid: { color: '#2d3748' },
+        ticks: { color: '#374151', callback: (v) => v + '%', font: { family: 'Inter', size: 11 } },
+        grid: { color: '#1f2937' },
       },
-      x: { ticks: { color: '#8892a4' }, grid: { color: '#2d3748' } },
+      x: {
+        ticks: { color: '#374151', font: { family: 'Inter', size: 11 } },
+        grid: { color: '#1f2937' },
+      },
     },
   };
 
   lineData: ChartData<'line'> = { labels: [], datasets: [] };
   lineOptions: ChartConfiguration['options'] = {
     responsive: true,
-    plugins: { legend: { labels: { color: '#8892a4', boxWidth: 12 } } },
+    plugins: {
+      legend: { labels: { color: '#4b5563', boxWidth: 10, font: { family: 'Inter', size: 11 } } },
+    },
     scales: {
       y: {
         min: 0,
         max: 100,
-        ticks: { color: '#8892a4', callback: (v) => v + '%' },
-        grid: { color: '#2d3748' },
+        ticks: { color: '#374151', callback: (v) => v + '%', font: { family: 'Inter', size: 11 } },
+        grid: { color: '#1f2937' },
       },
-      x: { ticks: { color: '#8892a4', maxTicksLimit: 15 }, grid: { color: '#2d3748' } },
+      x: {
+        ticks: { color: '#374151', maxTicksLimit: 15, font: { family: 'Inter', size: 11 } },
+        grid: { color: '#1f2937' },
+      },
     },
   };
 
@@ -612,16 +680,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   buildBarChart() {
     const values = this.teamSummary.map((t) => t.quality);
-    const colors = values.map((v) => (v >= QUALITY_THRESHOLD ? '#00b894' : '#e74c3c'));
+    const colors = values.map((v) => (v >= QUALITY_THRESHOLD ? '#00d4aa' : '#ff4757'));
     this.barData = {
       labels: TEAMS,
-      datasets: [{ data: values, backgroundColor: colors, borderRadius: 8 }],
+      datasets: [{ data: values, backgroundColor: colors, borderRadius: 6 }],
     };
   }
 
   buildLineChart() {
     const labels = this.filtered.map((r) => r.date.slice(8) + '/' + r.date.slice(5, 7));
-    const palette = ['#00b894', '#0984e3', '#fdcb6e', '#e17055', '#a29bfe'];
+    const palette = ['#00d4aa', '#3b82f6', '#f59e0b', '#f97316', '#8b5cf6'];
     this.lineData = {
       labels,
       datasets: TEAMS.map((team, i) => {
@@ -637,10 +705,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
           borderColor: palette[i],
           backgroundColor: 'transparent',
           pointBackgroundColor: (data as number[]).map((v) =>
-            v !== null && v < QUALITY_THRESHOLD ? '#e74c3c' : palette[i],
+            v !== null && v < QUALITY_THRESHOLD ? '#ff4757' : palette[i],
           ),
-          tension: 0.3,
+          tension: 0.4,
           pointRadius: 4,
+          borderWidth: 2,
           spanGaps: true,
         };
       }),
