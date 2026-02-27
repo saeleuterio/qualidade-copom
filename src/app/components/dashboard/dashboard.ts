@@ -54,11 +54,14 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         </div>
       </div>
 
-      <!-- Gráfico barras centralizado -->
+      <!-- Gráfico barras centralizado com linha de meta -->
       <div class="chart-card">
         <div class="card-header">
           <span class="card-title">QUALIDADE MÉDIA POR EQUIPE</span>
-          <span class="card-badge">% qualidade</span>
+          <div class="card-badges">
+            <span class="card-badge meta">META: 95%</span>
+            <span class="card-badge">% qualidade</span>
+          </div>
         </div>
         <div class="bar-center">
           <div class="bar-inner">
@@ -237,7 +240,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         font-family: 'Inter', sans-serif;
       }
 
-      /* Top bar */
       .top-bar {
         display: flex;
         align-items: center;
@@ -340,7 +342,11 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         font-size: 11px;
         font-weight: 700;
         letter-spacing: 1.5px;
-        text-transform: uppercase;
+      }
+      .card-badges {
+        display: flex;
+        gap: 6px;
+        align-items: center;
       }
       .card-badge {
         background: #1f2937;
@@ -351,6 +357,10 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         border-radius: 20px;
         letter-spacing: 1px;
         text-transform: uppercase;
+      }
+      .card-badge.meta {
+        background: rgba(245, 166, 35, 0.15);
+        color: #f5a623;
       }
 
       .bar-center {
@@ -407,11 +417,20 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         width: 3px;
         background: #1f2937;
       }
+      .ranking-item.first {
+        border-color: rgba(255, 215, 0, 0.2);
+      }
       .ranking-item.first::before {
         background: #ffd700;
       }
+      .ranking-item.second {
+        border-color: rgba(156, 163, 175, 0.2);
+      }
       .ranking-item.second::before {
         background: #9ca3af;
+      }
+      .ranking-item.third {
+        border-color: rgba(205, 127, 50, 0.2);
       }
       .ranking-item.third::before {
         background: #cd7f32;
@@ -430,7 +449,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         color: #4b5563;
         font-size: 16px;
         font-weight: 800;
-        font-family: 'Inter', sans-serif;
       }
 
       .rank-info {
@@ -514,7 +532,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       .table-card.detail {
         margin-bottom: 20px;
       }
-
       table {
         width: 100%;
         border-collapse: collapse;
@@ -574,15 +591,33 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         color: #ff4757;
       }
 
-      @media (max-width: 900px) {
-        .kpi-row {
-          grid-template-columns: 1fr 1fr;
-        }
+      @media (max-width: 1024px) {
         .bottom-row {
           grid-template-columns: 1fr;
         }
+      }
+      @media (max-width: 768px) {
+        .kpi-row {
+          grid-template-columns: 1fr 1fr;
+        }
         .bar-inner {
           width: 100%;
+        }
+        .dash-wrap {
+          padding: 12px;
+        }
+        .kpi-value {
+          font-size: 28px;
+        }
+      }
+      @media (max-width: 480px) {
+        .kpi-row {
+          grid-template-columns: 1fr;
+        }
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
         }
       }
     `,
@@ -601,7 +636,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
   barOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: true,
-    plugins: { legend: { display: false } },
+    aspectRatio: 3,
+    plugins: {
+      legend: { display: false },
+      annotation: {
+        annotations: {
+          metaLine: {
+            type: 'line',
+            yMin: 95,
+            yMax: 95,
+            borderColor: 'rgba(245,166,35,0.6)',
+            borderWidth: 2,
+            borderDash: [6, 4],
+            label: {
+              display: true,
+              content: 'Meta 95%',
+              color: '#f5a623',
+              font: { size: 11, family: 'Inter' },
+              position: 'end',
+              backgroundColor: 'rgba(245,166,35,0.15)',
+            },
+          },
+        },
+      },
+    },
     scales: {
       y: {
         min: 0,
@@ -621,6 +679,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     responsive: true,
     plugins: {
       legend: { labels: { color: '#4b5563', boxWidth: 10, font: { family: 'Inter', size: 11 } } },
+      annotation: {
+        annotations: {
+          metaLine: {
+            type: 'line',
+            yMin: 95,
+            yMax: 95,
+            borderColor: 'rgba(245,166,35,0.4)',
+            borderWidth: 1.5,
+            borderDash: [6, 4],
+          },
+        },
+      },
     },
     scales: {
       y: {
@@ -683,7 +753,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const colors = values.map((v) => (v >= QUALITY_THRESHOLD ? '#00d4aa' : '#ff4757'));
     this.barData = {
       labels: TEAMS,
-      datasets: [{ data: values, backgroundColor: colors, borderRadius: 6 }],
+      datasets: [{ data: values, backgroundColor: colors, borderRadius: 6, maxBarThickness: 60 }],
     };
   }
 
