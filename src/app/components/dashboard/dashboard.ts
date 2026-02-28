@@ -636,7 +636,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   barOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: true,
-    aspectRatio: 3,
+    aspectRatio: 1,
     plugins: {
       legend: { display: false },
       annotation: {
@@ -677,6 +677,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   lineData: ChartData<'line'> = { labels: [], datasets: [] };
   lineOptions: ChartConfiguration['options'] = {
     responsive: true,
+    maintainAspectRatio: true,
+    aspectRatio: 2,
     plugins: {
       legend: { labels: { color: '#4b5563', boxWidth: 10, font: { family: 'Inter', size: 11 } } },
       annotation: {
