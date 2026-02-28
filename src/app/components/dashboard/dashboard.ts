@@ -7,6 +7,8 @@ import { CallCenterService, QUALITY_THRESHOLD } from '../../services/call-center
 import { KpiCardComponent } from '../kpi-card/kpi-card';
 import { DailyRecord } from '../../models/team-data';
 import { Subscription } from 'rxjs';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
 
@@ -21,7 +23,12 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
           <span class="filter-label">MÊS</span>
           <input type="month" [(ngModel)]="selectedMonth" (change)="refresh()" />
         </div>
-        <span class="record-count">{{ filtered.length }} DIA(S) REGISTRADO(S)</span>
+        <div class="top-actions">
+          <span class="record-count">{{ filtered.length }} DIA(S) REGISTRADO(S)</span>
+          <button class="pdf-btn" (click)="exportPDF()" [disabled]="filtered.length === 0">
+            📄 EXPORTAR PDF
+          </button>
+        </div>
       </div>
 
       <!-- KPIs -->
@@ -54,7 +61,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         </div>
       </div>
 
-      <!-- Gráfico barras centralizado com linha de meta -->
+      <!-- Gráfico barras -->
       <div class="chart-card">
         <div class="card-header">
           <span class="card-title">QUALIDADE MÉDIA POR EQUIPE</span>
@@ -174,7 +181,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
                     [class.ok]="row.quality >= threshold"
                     [class.nok]="row.quality < threshold"
                   >
-                    {{ row.quality >= threshold ? '✅ OK' : '⚠️ ABAIXO' }}
+                    {{ row.quality >= threshold ? 'OK' : 'ABAIXO' }}
                   </span>
                 </td>
               </tr>
@@ -192,10 +199,10 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
           <thead>
             <tr>
               <th>DATA</th>
-              <th>TURNO 1 (05:30–18:00)</th>
-              <th>QUALIDADE T1</th>
-              <th>TURNO 2 (17:30–06:00)</th>
-              <th>QUALIDADE T2</th>
+              <th>DIURNO (05:30–18:00)</th>
+              <th>QUALIDADE</th>
+              <th>NOTURNO (17:30–06:00)</th>
+              <th>QUALIDADE</th>
             </tr>
           </thead>
           <tbody>
@@ -266,11 +273,43 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         font-size: 13px;
         font-family: 'Inter', sans-serif;
       }
+      .month-filter input:focus {
+        outline: none;
+        border-color: #00d4aa;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
       .record-count {
         color: #374151;
         font-size: 10px;
         font-weight: 700;
         letter-spacing: 1.5px;
+      }
+      .pdf-btn {
+        padding: 7px 16px;
+        background: transparent;
+        border: 1px solid rgba(0, 212, 170, 0.4);
+        color: #00d4aa;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        font-family: 'Inter', sans-serif;
+        transition: 0.2s;
+        text-transform: uppercase;
+      }
+      .pdf-btn:hover {
+        background: rgba(0, 212, 170, 0.1);
+        border-color: #00d4aa;
+      }
+      .pdf-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
       }
 
       /* KPI */
@@ -304,7 +343,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .kpi-label {
         color: #4a5568;
-        font-size: 15px;
+        font-size: 10px;
         font-weight: 700;
         letter-spacing: 1.5px;
         margin-bottom: 10px;
@@ -319,7 +358,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .kpi-sub {
         color: #374151;
-        font-size: 16px;
+        font-size: 11px;
         font-weight: 500;
       }
 
@@ -335,18 +374,19 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #1f2937;
       }
       .card-title {
         color: #9ca3af;
-        font-size: 16px;
+        font-size: 11px;
         font-weight: 700;
         letter-spacing: 1.5px;
       }
       .card-badges {
         display: flex;
         gap: 6px;
-        align-items: center;
       }
       .card-badge {
         background: #1f2937;
@@ -357,10 +397,12 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         border-radius: 20px;
         letter-spacing: 1px;
         text-transform: uppercase;
+        border: 1px solid #1f2937;
       }
       .card-badge.meta {
-        background: rgba(245, 166, 35, 0.15);
+        background: rgba(245, 166, 35, 0.1);
         color: #f5a623;
+        border-color: rgba(245, 166, 35, 0.3);
       }
 
       .bar-center {
@@ -450,7 +492,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         font-size: 16px;
         font-weight: 800;
       }
-
       .rank-info {
         flex: 1;
         min-width: 0;
@@ -469,9 +510,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         color: #374151;
         font-size: 10px;
         font-weight: 600;
-        letter-spacing: 0.5px;
       }
-
       .rank-bar-bg {
         background: #1f2937;
         border-radius: 20px;
@@ -492,7 +531,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         width: 2px;
         background: rgba(255, 255, 255, 0.1);
       }
-
       .rank-score-col {
         text-align: center;
         flex-shrink: 0;
@@ -547,6 +585,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         text-transform: uppercase;
         letter-spacing: 1.5px;
         font-weight: 700;
+        border-bottom: 1px solid #1f2937;
       }
       td {
         padding: 11px 14px;
@@ -609,15 +648,15 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         .kpi-value {
           font-size: 28px;
         }
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
       }
       @media (max-width: 480px) {
         .kpi-row {
           grid-template-columns: 1fr;
-        }
-        .top-bar {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 8px;
         }
       }
     `,
@@ -645,7 +684,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             type: 'line',
             yMin: 95,
             yMax: 95,
-            borderColor: 'rgba(245,166,35,0.6)',
+            borderColor: 'rgba(245,166,35,0.7)',
             borderWidth: 2,
             borderDash: [6, 4],
             label: {
@@ -786,5 +825,214 @@ export class DashboardComponent implements OnInit, OnDestroy {
         };
       }),
     };
+  }
+
+  exportPDF() {
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const monthLabel = new Date(this.selectedMonth + '-01').toLocaleDateString('pt-BR', {
+      month: 'long',
+      year: 'numeric',
+    });
+    const W = doc.internal.pageSize.getWidth();
+
+    // Header
+    doc.setFillColor(13, 48, 18);
+    doc.rect(0, 0, W, 28, 'F');
+    doc.setFillColor(200, 166, 0);
+    doc.rect(0, 28, W, 1, 'F');
+    doc.setTextColor(200, 166, 0);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('COPOM — QUALIDADE DO SERVIÇO', W / 2, 12, { align: 'center' });
+    doc.setTextColor(180, 200, 180);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Central de Operações da Polícia Militar', W / 2, 19, { align: 'center' });
+    doc.setTextColor(150, 170, 150);
+    doc.text(`Relatório Mensal — ${monthLabel.toUpperCase()}`, W / 2, 25, { align: 'center' });
+
+    let y = 38;
+
+    // KPIs
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 140, 100);
+    doc.text('RESUMO DO MÊS', 14, y);
+    y += 6;
+
+    const kpis = [
+      { label: 'Total Oferecidas', value: String(this.totals.offered) },
+      { label: 'Total Recebidas', value: String(this.totals.received) },
+      { label: 'Total Perdidas', value: String(this.totals.lost) },
+      { label: 'Taxa de Abandono', value: this.totals.abandonRate.toFixed(1) + '%' },
+    ];
+
+    const kpiW = (W - 28) / 4;
+    kpis.forEach((k, i) => {
+      const x = 14 + i * (kpiW + 2);
+      doc.setFillColor(13, 43, 16);
+      doc.roundedRect(x, y, kpiW, 18, 2, 2, 'F');
+      doc.setDrawColor(26, 61, 30);
+      doc.roundedRect(x, y, kpiW, 18, 2, 2, 'S');
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(74, 124, 89);
+      doc.text(k.label.toUpperCase(), x + kpiW / 2, y + 5, { align: 'center' });
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(220, 230, 220);
+      doc.text(k.value, x + kpiW / 2, y + 13, { align: 'center' });
+    });
+    y += 26;
+
+    // Ranking
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 140, 100);
+    doc.text('RANKING DE QUALIDADE', 14, y);
+    y += 4;
+
+    const medals = ['1º', '2º', '3º', '4º', '5º'];
+    this.ranking.forEach((row, i) => {
+      const isOk = row.quality >= this.threshold;
+      doc.setFillColor(isOk ? 10 : 40, isOk ? 40 : 10, isOk ? 15 : 10);
+      doc.roundedRect(14, y, W - 28, 10, 2, 2, 'F');
+      doc.setDrawColor(isOk ? 26 : 80, isOk ? 61 : 20, isOk ? 30 : 20);
+      doc.roundedRect(14, y, W - 28, 10, 2, 2, 'S');
+
+      doc.setFillColor(isOk ? 76 : 229, isOk ? 175 : 57, isOk ? 80 : 53);
+      doc.rect(14, y, 2, 10, 'F');
+
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(200, 166, 0);
+      doc.text(medals[i], 20, y + 6.5);
+
+      doc.setTextColor(220, 230, 220);
+      doc.text(row.team, 32, y + 6.5);
+
+      const scoreColor = isOk ? [76, 175, 80] : [229, 57, 53];
+      doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2]);
+      doc.text(row.quality.toFixed(1) + '%', W - 20, y + 6.5, { align: 'right' });
+
+      y += 12;
+    });
+    y += 4;
+
+    // Resumo por equipe
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 140, 100);
+    doc.text('RESUMO MENSAL POR EQUIPE', 14, y);
+    y += 2;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['EQUIPE', 'DIAS', 'MELHOR', 'PIOR', 'MÉDIA', 'STATUS']],
+      body: this.teamSummary
+        .filter((r) => r.days > 0)
+        .map((row) => [
+          row.team,
+          String(row.days),
+          row.best.toFixed(1) + '%',
+          row.worst.toFixed(1) + '%',
+          row.quality.toFixed(1) + '%',
+          row.quality >= this.threshold ? 'OK' : 'ABAIXO',
+        ]),
+      styles: {
+        fontSize: 9,
+        font: 'helvetica',
+        fillColor: [13, 43, 16],
+        textColor: [200, 220, 200],
+        lineColor: [26, 61, 30],
+        lineWidth: 0.3,
+      },
+      headStyles: {
+        fillColor: [10, 32, 9],
+        textColor: [74, 124, 89],
+        fontStyle: 'bold',
+        fontSize: 8,
+      },
+      alternateRowStyles: { fillColor: [10, 36, 13] },
+      columnStyles: {
+        4: { fontStyle: 'bold' },
+        5: { fontStyle: 'bold' },
+      },
+      didParseCell: (data) => {
+        if (data.section === 'body' && data.column.index === 5) {
+          data.cell.styles.textColor = data.cell.raw === 'OK' ? [76, 175, 80] : [229, 57, 53];
+        }
+        if (data.section === 'body' && data.column.index === 4) {
+          const val = parseFloat(String(data.cell.raw));
+          data.cell.styles.textColor = val >= 95 ? [76, 175, 80] : [229, 57, 53];
+        }
+      },
+      margin: { left: 14, right: 14 },
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 8;
+
+    // Detalhe por dia
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 140, 100);
+    doc.text('DETALHE POR DIA', 14, y);
+    y += 2;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['DATA', 'TURNO 1', 'QUAL. T1', 'TURNO 2', 'QUAL. T2']],
+      body: this.filtered.map((rec) => {
+        const t1 = rec.shifts[0];
+        const t2 = rec.shifts[1];
+        return [
+          new Date(rec.date + 'T12:00:00').toLocaleDateString('pt-BR'),
+          t1 ? t1.team : '—',
+          t1 ? t1.qualityScore.toFixed(1) + '%' : '—',
+          t2 ? t2.team : '—',
+          t2 ? t2.qualityScore.toFixed(1) + '%' : '—',
+        ];
+      }),
+      styles: {
+        fontSize: 9,
+        font: 'helvetica',
+        fillColor: [13, 43, 16],
+        textColor: [200, 220, 200],
+        lineColor: [26, 61, 30],
+        lineWidth: 0.3,
+      },
+      headStyles: {
+        fillColor: [10, 32, 9],
+        textColor: [74, 124, 89],
+        fontStyle: 'bold',
+        fontSize: 8,
+      },
+      alternateRowStyles: { fillColor: [10, 36, 13] },
+      didParseCell: (data) => {
+        if (data.section === 'body' && (data.column.index === 2 || data.column.index === 4)) {
+          const val = parseFloat(String(data.cell.raw));
+          if (!isNaN(val)) {
+            data.cell.styles.textColor = val >= 95 ? [76, 175, 80] : [229, 57, 53];
+            data.cell.styles.fontStyle = 'bold';
+          }
+        }
+      },
+      margin: { left: 14, right: 14 },
+    });
+
+    // Footer
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      const pH = doc.internal.pageSize.getHeight();
+      doc.setFillColor(13, 48, 18);
+      doc.rect(0, pH - 10, W, 10, 'F');
+      doc.setFontSize(7);
+      doc.setTextColor(74, 124, 89);
+      doc.text(`COPOM — Relatório gerado em ${new Date().toLocaleString('pt-BR')}`, 14, pH - 3.5);
+      doc.text(`Página ${i} de ${pageCount}`, W - 14, pH - 3.5, { align: 'right' });
+    }
+
+    doc.save(`qualidade-copom-${this.selectedMonth}.pdf`);
   }
 }
