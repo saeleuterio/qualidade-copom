@@ -310,7 +310,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         margin-bottom: 10px;
       }
       .kpi-value {
-        font-size: 41px;
+        font-size: 36px;
         font-weight: 800;
         color: #e2e8f0;
         font-family: 'JetBrains Mono', 'Courier New', monospace;
