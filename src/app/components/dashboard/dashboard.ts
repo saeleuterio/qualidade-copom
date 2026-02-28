@@ -304,13 +304,13 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .kpi-label {
         color: #4a5568;
-        font-size: 10px;
+        font-size: 15px;
         font-weight: 700;
         letter-spacing: 1.5px;
         margin-bottom: 10px;
       }
       .kpi-value {
-        font-size: 36px;
+        font-size: 41px;
         font-weight: 800;
         color: #e2e8f0;
         font-family: 'JetBrains Mono', 'Courier New', monospace;
@@ -319,7 +319,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .kpi-sub {
         color: #374151;
-        font-size: 11px;
+        font-size: 16px;
         font-weight: 500;
       }
 
@@ -339,7 +339,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .card-title {
         color: #9ca3af;
-        font-size: 11px;
+        font-size: 16px;
         font-weight: 700;
         letter-spacing: 1.5px;
       }
