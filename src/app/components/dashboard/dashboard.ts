@@ -829,7 +829,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   exportPDF() {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const monthLabel = new Date(this.selectedMonth + '-01').toLocaleDateString('pt-BR', {
+    const [year, month] = this.selectedMonth.split('-').map(Number);
+    const monthLabel = new Date(year, month - 1, 1).toLocaleDateString('pt-BR', {
       month: 'long',
       year: 'numeric',
     });
@@ -848,7 +849,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     doc.setFont('helvetica', 'normal');
     doc.text('CENTRO DE OPERAÇÕES DA POLICIA MILITAR', W / 2, 19, { align: 'center' });
     doc.setTextColor(150, 170, 150);
-    doc.text(`RELATÓRIO MENSAL — ${monthLabel.toUpperCase()}`, W / 2, 25, { align: 'center' });
+    doc.text(`${monthLabel.toUpperCase()}`, W / 2, 25, { align: 'center' });
 
     let y = 38;
 
