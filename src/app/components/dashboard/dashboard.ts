@@ -181,7 +181,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
                     [class.ok]="row.quality >= threshold"
                     [class.nok]="row.quality < threshold"
                   >
-                    {{ row.quality >= threshold ? 'OK' : 'ABAIXO' }}
+                    {{ row.quality >= threshold ? '✅ OK' : '⚠️ ABAIXO' }}
                   </span>
                 </td>
               </tr>
@@ -199,10 +199,10 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
           <thead>
             <tr>
               <th>DATA</th>
-              <th>DIURNO (05:30–18:00)</th>
-              <th>QUALIDADE</th>
-              <th>NOTURNO (17:30–06:00)</th>
-              <th>QUALIDADE</th>
+              <th>TURNO 1 (05:30–18:00)</th>
+              <th>QUALIDADE T1</th>
+              <th>TURNO 2 (17:30–06:00)</th>
+              <th>QUALIDADE T2</th>
             </tr>
           </thead>
           <tbody>
@@ -259,7 +259,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         gap: 10px;
       }
       .filter-label {
-        color: #4a5568;
+        color: #ffffff;
         font-size: 10px;
         font-weight: 700;
         letter-spacing: 1.5px;
@@ -267,7 +267,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       .month-filter input {
         background: #111827;
         border: 1px solid #1f2937;
-        color: #e2e8f0;
+        color: #ffffff;
         padding: 7px 12px;
         border-radius: 6px;
         font-size: 13px;
@@ -284,7 +284,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         gap: 14px;
       }
       .record-count {
-        color: #374151;
+        color: #ffffff;
         font-size: 10px;
         font-weight: 700;
         letter-spacing: 1.5px;
@@ -342,7 +342,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         background: #ff4757;
       }
       .kpi-label {
-        color: #4a5568;
+        color: #ffffff;
         font-size: 10px;
         font-weight: 700;
         letter-spacing: 1.5px;
@@ -351,13 +351,13 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       .kpi-value {
         font-size: 36px;
         font-weight: 800;
-        color: #e2e8f0;
+        color: #ffffff;
         font-family: 'JetBrains Mono', 'Courier New', monospace;
         line-height: 1;
         margin-bottom: 6px;
       }
       .kpi-sub {
-        color: #374151;
+        color: rgba(255, 255, 255, 0.6);
         font-size: 11px;
         font-weight: 500;
       }
@@ -379,7 +379,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         border-bottom: 1px solid #1f2937;
       }
       .card-title {
-        color: #9ca3af;
+        color: #ffffff;
         font-size: 11px;
         font-weight: 700;
         letter-spacing: 1.5px;
@@ -390,14 +390,14 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .card-badge {
         background: #1f2937;
-        color: #4b5563;
+        color: #ffffff;
         font-size: 10px;
         font-weight: 600;
         padding: 3px 10px;
         border-radius: 20px;
         letter-spacing: 1px;
         text-transform: uppercase;
-        border: 1px solid #1f2937;
+        border: 1px solid #2d3748;
       }
       .card-badge.meta {
         background: rgba(245, 166, 35, 0.1);
@@ -488,7 +488,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         font-size: 22px;
       }
       .rank-num {
-        color: #4b5563;
+        color: #ffffff;
         font-size: 16px;
         font-weight: 800;
       }
@@ -502,12 +502,12 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         margin-bottom: 6px;
       }
       .rank-team {
-        color: #e2e8f0;
+        color: #ffffff;
         font-size: 13px;
         font-weight: 700;
       }
       .rank-days {
-        color: #374151;
+        color: rgba(255, 255, 255, 0.6);
         font-size: 10px;
         font-weight: 600;
       }
@@ -552,7 +552,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .no-data {
         text-align: center;
-        color: #374151;
+        color: rgba(255, 255, 255, 0.4);
         padding: 20px;
         font-size: 12px;
         letter-spacing: 1px;
@@ -580,7 +580,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       th {
         padding: 10px 14px;
         text-align: left;
-        color: #374151;
+        color: #ffffff;
         font-size: 10px;
         text-transform: uppercase;
         letter-spacing: 1.5px;
@@ -590,7 +590,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       td {
         padding: 11px 14px;
         border-bottom: 1px solid #1f2937;
-        color: #d1d5db;
+        color: #ffffff;
         font-size: 13px;
         font-weight: 500;
       }
@@ -603,7 +603,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       .mono-date {
         font-family: 'JetBrains Mono', 'Courier New', monospace;
         font-size: 12px;
-        color: #6b7280;
+        color: rgba(255, 255, 255, 0.7);
       }
 
       .red {
@@ -675,7 +675,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   barOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: true,
-    aspectRatio: 3,
+    aspectRatio: 2.5,
     plugins: {
       legend: { display: false },
       annotation: {
@@ -703,11 +703,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       y: {
         min: 0,
         max: 100,
-        ticks: { color: '#374151', callback: (v) => v + '%', font: { family: 'Inter', size: 11 } },
+        ticks: { color: '#ffffff', callback: (v) => v + '%', font: { family: 'Inter', size: 11 } },
         grid: { color: '#1f2937' },
       },
       x: {
-        ticks: { color: '#374151', font: { family: 'Inter', size: 11 } },
+        ticks: { color: '#ffffff', font: { family: 'Inter', size: 11 } },
         grid: { color: '#1f2937' },
       },
     },
@@ -717,9 +717,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   lineOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: true,
-    aspectRatio: 4,
+    aspectRatio: 3,
     plugins: {
-      legend: { labels: { color: '#4b5563', boxWidth: 10, font: { family: 'Inter', size: 11 } } },
+      legend: { labels: { color: '#ffffff', boxWidth: 10, font: { family: 'Inter', size: 11 } } },
       annotation: {
         annotations: {
           metaLine: {
@@ -737,11 +737,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       y: {
         min: 0,
         max: 100,
-        ticks: { color: '#374151', callback: (v) => v + '%', font: { family: 'Inter', size: 11 } },
+        ticks: { color: '#ffffff', callback: (v) => v + '%', font: { family: 'Inter', size: 11 } },
         grid: { color: '#1f2937' },
       },
       x: {
-        ticks: { color: '#374151', maxTicksLimit: 15, font: { family: 'Inter', size: 11 } },
+        ticks: { color: '#ffffff', maxTicksLimit: 15, font: { family: 'Inter', size: 11 } },
         grid: { color: '#1f2937' },
       },
     },
@@ -835,7 +835,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
     const W = doc.internal.pageSize.getWidth();
 
-    // Header
     doc.setFillColor(13, 48, 18);
     doc.rect(0, 0, W, 28, 'F');
     doc.setFillColor(200, 166, 0);
@@ -853,7 +852,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     let y = 38;
 
-    // KPIs
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(100, 140, 100);
@@ -885,7 +883,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
     y += 26;
 
-    // Ranking
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(100, 140, 100);
@@ -899,27 +896,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
       doc.roundedRect(14, y, W - 28, 10, 2, 2, 'F');
       doc.setDrawColor(isOk ? 26 : 80, isOk ? 61 : 20, isOk ? 30 : 20);
       doc.roundedRect(14, y, W - 28, 10, 2, 2, 'S');
-
       doc.setFillColor(isOk ? 76 : 229, isOk ? 175 : 57, isOk ? 80 : 53);
       doc.rect(14, y, 2, 10, 'F');
-
       doc.setFontSize(8);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(200, 166, 0);
       doc.text(medals[i], 20, y + 6.5);
-
       doc.setTextColor(220, 230, 220);
       doc.text(row.team, 32, y + 6.5);
-
       const scoreColor = isOk ? [76, 175, 80] : [229, 57, 53];
       doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2]);
       doc.text(row.quality.toFixed(1) + '%', W - 20, y + 6.5, { align: 'right' });
-
       y += 12;
     });
     y += 4;
 
-    // Resumo por equipe
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(100, 140, 100);
@@ -954,14 +945,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         fontSize: 8,
       },
       alternateRowStyles: { fillColor: [10, 36, 13] },
-      columnStyles: {
-        4: { fontStyle: 'bold' },
-        5: { fontStyle: 'bold' },
-      },
       didParseCell: (data) => {
-        if (data.section === 'body' && data.column.index === 5) {
+        if (data.section === 'body' && data.column.index === 5)
           data.cell.styles.textColor = data.cell.raw === 'OK' ? [76, 175, 80] : [229, 57, 53];
-        }
         if (data.section === 'body' && data.column.index === 4) {
           const val = parseFloat(String(data.cell.raw));
           data.cell.styles.textColor = val >= 95 ? [76, 175, 80] : [229, 57, 53];
@@ -972,7 +958,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     y = (doc as any).lastAutoTable.finalY + 8;
 
-    // Detalhe por dia
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(100, 140, 100);
@@ -1020,7 +1005,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       margin: { left: 14, right: 14 },
     });
 
-    // Footer
     const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
