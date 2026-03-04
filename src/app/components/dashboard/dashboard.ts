@@ -846,9 +846,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     doc.setTextColor(180, 200, 180);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text('Central de Operações da Polícia Militar', W / 2, 19, { align: 'center' });
+    doc.text('CENTRO DE OPERAÇÕES DA POLICIA MILITAR', W / 2, 19, { align: 'center' });
     doc.setTextColor(150, 170, 150);
-    doc.text(`Relatório Mensal — ${monthLabel.toUpperCase()}`, W / 2, 25, { align: 'center' });
+    doc.text(`RELATÓRIO MENSAL — ${monthLabel.toUpperCase()}`, W / 2, 25, { align: 'center' });
 
     let y = 38;
 
