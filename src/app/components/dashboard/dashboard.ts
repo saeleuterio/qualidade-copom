@@ -1014,7 +1014,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       doc.rect(0, pH - 10, W, 10, 'F');
       doc.setFontSize(7);
       doc.setTextColor(74, 124, 89);
-      doc.text(`COPOM — Relatório gerado em ${new Date().toLocaleString('pt-BR')}`, 14, pH - 3.5);
+      doc.text(`CPI-10 - COPOM — Relatório gerado em ${new Date().toLocaleString('pt-BR')}`, 14, pH - 3.5);
       doc.text(`Página ${i} de ${pageCount}`, W - 14, pH - 3.5, { align: 'right' });
     }
 
