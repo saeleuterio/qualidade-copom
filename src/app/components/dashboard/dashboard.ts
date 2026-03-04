@@ -842,7 +842,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     doc.setTextColor(200, 166, 0);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('COPOM — QUALIDADE DO SERVIÇO', W / 2, 12, { align: 'center' });
+    doc.text('QUALIDADE DO SERVIÇO', W / 2, 12, { align: 'center' });
     doc.setTextColor(180, 200, 180);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
