@@ -26,7 +26,7 @@ import { DataEntryFormComponent } from './components/data-entry-form/data-entry-
 
           <div class="header-center">
             <span class="header-title">QUALIDADE DO SERVIÇO</span>
-            <span class="header-subtitle">Central de Operações da Polícia Militar</span>
+            <span class="header-subtitle">CENTRO DE OPERAÇÕES DA POLICIA MILITAR</span>
           </div>
 
           <div class="logo-wrap">
