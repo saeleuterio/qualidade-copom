@@ -77,15 +77,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         </div>
       </div>
 
-      <!-- Gráfico linha -->
-      <div class="chart-card">
-        <div class="card-header">
-          <span class="card-title">EVOLUÇÃO DIÁRIA DE QUALIDADE</span>
-          <span class="card-badge">por turno</span>
-        </div>
-        <canvas baseChart [data]="lineData" [options]="lineOptions" type="line"></canvas>
-      </div>
-
       <!-- Ranking + Resumo -->
       <div class="bottom-row">
         <div class="ranking-card">
@@ -312,7 +303,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         cursor: not-allowed;
       }
 
-      /* KPI */
       .kpi-row {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -362,7 +352,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         font-weight: 500;
       }
 
-      /* Cards */
       .chart-card {
         background: #111827;
         border: 1px solid #1f2937;
@@ -416,7 +405,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         max-width: 800px;
       }
 
-      /* Bottom row */
       .bottom-row {
         display: grid;
         grid-template-columns: 360px 1fr;
@@ -425,7 +413,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         align-items: stretch;
       }
 
-      /* Ranking */
       .ranking-card {
         background: #111827;
         border: 1px solid #1f2937;
@@ -558,7 +545,6 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
         letter-spacing: 1px;
       }
 
-      /* Tabela */
       .table-card {
         background: #111827;
         border: 1px solid #1f2937;
@@ -675,7 +661,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   barOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: true,
-    aspectRatio: 2.5,
+    aspectRatio: 2,
     plugins: {
       legend: { display: false },
       annotation: {
@@ -713,40 +699,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     },
   };
 
-  lineData: ChartData<'line'> = { labels: [], datasets: [] };
-  lineOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: true,
-    aspectRatio: 3,
-    plugins: {
-      legend: { labels: { color: '#ffffff', boxWidth: 10, font: { family: 'Inter', size: 11 } } },
-      annotation: {
-        annotations: {
-          metaLine: {
-            type: 'line',
-            yMin: 95,
-            yMax: 95,
-            borderColor: 'rgba(245,166,35,0.4)',
-            borderWidth: 1.5,
-            borderDash: [6, 4],
-          },
-        },
-      },
-    },
-    scales: {
-      y: {
-        min: 0,
-        max: 100,
-        ticks: { color: '#ffffff', callback: (v) => v + '%', font: { family: 'Inter', size: 11 } },
-        grid: { color: '#1f2937' },
-      },
-      x: {
-        ticks: { color: '#ffffff', maxTicksLimit: 15, font: { family: 'Inter', size: 11 } },
-        grid: { color: '#1f2937' },
-      },
-    },
-  };
-
   constructor(private svc: CallCenterService) {}
 
   ngOnInit() {
@@ -765,7 +717,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.buildTeamSummary();
     this.buildRanking();
     this.buildBarChart();
-    this.buildLineChart();
   }
 
   buildTeamSummary() {
@@ -798,35 +749,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
   }
 
-  buildLineChart() {
-    const labels = this.filtered.map((r) => r.date.slice(8) + '/' + r.date.slice(5, 7));
-    const palette = ['#00d4aa', '#3b82f6', '#f59e0b', '#f97316', '#8b5cf6'];
-    this.lineData = {
-      labels,
-      datasets: TEAMS.map((team, i) => {
-        const data = this.filtered.map((r) => {
-          const shifts = r.shifts.filter((s) => s.team === team);
-          return shifts.length
-            ? shifts.reduce((a, s) => a + s.qualityScore, 0) / shifts.length
-            : null;
-        });
-        return {
-          label: team,
-          data: data as number[],
-          borderColor: palette[i],
-          backgroundColor: 'transparent',
-          pointBackgroundColor: (data as number[]).map((v) =>
-            v !== null && v < QUALITY_THRESHOLD ? '#ff4757' : palette[i],
-          ),
-          tension: 0.4,
-          pointRadius: 4,
-          borderWidth: 2,
-          spanGaps: true,
-        };
-      }),
-    };
-  }
-
   exportPDF() {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const [year, month] = this.selectedMonth.split('-').map(Number);
@@ -843,13 +765,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     doc.setTextColor(200, 166, 0);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('QUALIDADE DO SERVIÇO', W / 2, 12, { align: 'center' });
+    doc.text('COPOM — QUALIDADE DO SERVIÇO', W / 2, 12, { align: 'center' });
     doc.setTextColor(180, 200, 180);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text('CENTRO DE OPERAÇÕES DA POLICIA MILITAR', W / 2, 19, { align: 'center' });
+    doc.text('Central de Operações da Polícia Militar', W / 2, 19, { align: 'center' });
     doc.setTextColor(150, 170, 150);
-    doc.text(`${monthLabel.toUpperCase()}`, W / 2, 25, { align: 'center' });
+    doc.text(`Relatório Mensal — ${monthLabel.toUpperCase()}`, W / 2, 25, { align: 'center' });
 
     let y = 38;
 
@@ -1014,7 +936,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       doc.rect(0, pH - 10, W, 10, 'F');
       doc.setFontSize(7);
       doc.setTextColor(74, 124, 89);
-      doc.text(`CPI-10 - COPOM — Relatório gerado em ${new Date().toLocaleString('pt-BR')}`, 14, pH - 3.5);
+      doc.text(`COPOM — Relatório gerado em ${new Date().toLocaleString('pt-BR')}`, 14, pH - 3.5);
       doc.text(`Página ${i} de ${pageCount}`, W - 14, pH - 3.5, { align: 'right' });
     }
 
