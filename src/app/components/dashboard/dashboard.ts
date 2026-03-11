@@ -190,10 +190,10 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
           <thead>
             <tr>
               <th>DATA</th>
-              <th>TURNO 1 (05:30–18:00)</th>
-              <th>QUALIDADE T1</th>
-              <th>TURNO 2 (17:30–06:00)</th>
-              <th>QUALIDADE T2</th>
+              <th>DIURNO (05:30–18:00)</th>
+              <th>QUALIDADE</th>
+              <th>NOTURNO (17:30–06:00)</th>
+              <th>QUALIDADE</th>
             </tr>
           </thead>
           <tbody>
@@ -333,7 +333,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .kpi-label {
         color: #ffffff;
-        font-size: 10px;
+        font-size: 15px;
         font-weight: 700;
         letter-spacing: 1.5px;
         margin-bottom: 10px;
@@ -348,7 +348,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       }
       .kpi-sub {
         color: rgba(255, 255, 255, 0.6);
-        font-size: 11px;
+        font-size: 14px;
         font-weight: 500;
       }
 
