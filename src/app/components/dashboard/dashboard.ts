@@ -205,7 +205,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
                   [class.red]="t1.qualityScore < threshold"
                   [class.green]="t1.qualityScore >= threshold"
                 >
-                  <strong>{{ t1.qualityScore | number: '1.1-1' }}%</strong>
+                  <strong>{{ t1.qualityScore | number: '1.2-2' }}%</strong>
                 </td>
               </ng-container>
               <ng-container *ngIf="!rec.shifts[0]"
@@ -218,7 +218,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
                   [class.red]="t2.qualityScore < threshold"
                   [class.green]="t2.qualityScore >= threshold"
                 >
-                  <strong>{{ t2.qualityScore | number: '1.1-1' }}%</strong>
+                  <strong>{{ t2.qualityScore | number: '1.2-2' }}%</strong>
                 </td>
               </ng-container>
               <ng-container *ngIf="!rec.shifts[1]"
