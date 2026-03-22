@@ -889,7 +889,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     autoTable(doc, {
       startY: y,
-      head: [['DATA', 'TURNO 1', 'QUAL. T1', 'TURNO 2', 'QUAL. T2']],
+      head: [['DATA', 'DIURNO', 'QUALIDADE', 'NOTURNO', 'QUALIDADE']],
       body: this.filtered.map((rec) => {
         const t1 = rec.shifts[0];
         const t2 = rec.shifts[1];
