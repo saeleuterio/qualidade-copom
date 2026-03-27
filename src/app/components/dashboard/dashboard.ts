@@ -15,7 +15,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, BaseChartDirective, KpiCardComponent, DecimalPipe],
+  imports: [CommonModule, FormsModule, BaseChartDirective, DecimalPipe], // KpiCardComponent,-- ESTAVA DANDO ERRO E RETIREI
   template: `
     <div class="dash-wrap">
       <div class="top-bar">
