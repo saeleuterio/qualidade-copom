@@ -34,7 +34,7 @@ const TEAMS = ['Equipe A', 'Equipe B', 'Equipe C', 'Equipe D', 'Equipe E'];
       <!-- KPIs -->
       <div class="kpi-row">
         <div class="kpi-card">
-          <div class="kpi-label">TOTAL OFERECIDAS</div>
+          <div class="kpi-label">TOTAL DE LIGAÇÕES</div>
           <div class="kpi-value">{{ totals.offered }}</div>
           <div class="kpi-sub">ligações no mês</div>
         </div>
